@@ -1,0 +1,16 @@
+# 模型文件（太大，不上传 GitHub）
+*.gguf
+*.gguf.part
+*.gguf.lock
+
+# 缓存和临时文件
+.cache/
+modelscope/
+
+# Claude 状态（每台机器独立）
+.claude/history*
+.claude/projects/
+.claude/*.log
+
+# 临时文件
+*.log
