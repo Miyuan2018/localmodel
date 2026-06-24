@@ -17,13 +17,18 @@ case "${1:-start}" in
 
     cd "$WORKDIR" || exit 1
 
-    # 窗口 0 = 小G Claude（实时可见）
+    # 窗口 0 = 小G Claude
     tmux new-session -d -s "$SESSION" -c "$WORKDIR" -n "小G"
     tmux send-keys -t "$SESSION:小G" "cd $WORKDIR && claude" Enter
 
-    # 窗口 1 = 任务提交 + 状态
+    # 后台启动回复通知器
+    pkill -f "task-notify.sh" 2>/dev/null || true
+    nohup bash "$WORKDIR/task-notify.sh" &>/dev/null &
+    sleep 1
+
+    # 窗口 1 = 任务状态
     tmux new-window -t "$SESSION" -c "$WORKDIR" -n "任务"
-    tmux send-keys -t "$SESSION:任务" "clear; echo '📋 给小G 派活 — 直接在这里打字，然后切回窗口0看他干活'; echo ''; echo '─────────────────────────────────'; echo '提交方式1: 在这里打任务描述，然后按 Enter'; echo '提交方式2: bash ~/localmodel/task-submit.sh \"任务描述\"'; echo ''" Enter
+    tmux send-keys -t "$SESSION:任务" "clear; echo '📋 任务面板'; echo ''; echo '提交:  bash ~/localmodel/task-submit.sh \"任务\"'; echo '查结果: bash ~/localmodel/task-check.sh'; echo '围观:   tmux attach -t lobby'; echo ''; echo '─────────────────────────────'; watch -n 5 'echo \"📥 等待中:\"; ls ~/localmodel/outbox/*.waiting 2>/dev/null | sed \"s|.*/||;s/.waiting//\" || echo \"  无\"; echo \"\"; echo \"📤 已完成:\"; ls -t ~/localmodel/outbox/*.md 2>/dev/null | head -5 | sed \"s|.*/||;s/.md//\" || echo \"  无\"'" Enter
 
     # 窗口 2 = 自由 Shell
     tmux new-window -t "$SESSION" -c "$HOME" -n "Shell"
