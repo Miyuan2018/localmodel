@@ -183,4 +183,95 @@ bash ~/localmodel/task-check.sh <任务ID>
 tmux attach -t lobby
 ```
 
+---
+
+## 最终架构：角色分离
+
+**关键修正：** 小G 只是团队成员，沟通机制是 Lead（我）的指挥系统。
+
+### 角色
+
+```
+       我 (Lead · DeepSeek V4 Pro)
+       │  ~/claude-workspace/CLAUDE.md
+       │
+       ├─ 🧠 /brainstorming  → 设计文档 (docs/specs/)
+       ├─ 📝 白板             → 讨论、公告、设计联动
+       ├─ 📋 任务队列         → 派活、追踪、异步通知
+       ├─ 🏛️ 大厅             → 指挥中心仪表盘
+       └─ ⚡ Agent Teams      → 并行执行
+               │
+       ┌───────┼────────┬────────┐
+       ▼       ▼        ▼        ▼
+      小G     老王      Alice     ...
+     成员    成员     成员      成员
+     gemma   human    human    human
+```
+
+| 角色 | 配置 | 职责 |
+|------|------|------|
+| **我 (Lead)** | `~/claude-workspace/CLAUDE.md` | 规划、派活、协调、决策 |
+| **小G** | `~/localmodel/CLAUDE.md` | 接收任务、写代码、回复 |
+| **队友** | 大厅窗口 | 讨论、提交任务 |
+
+### 大厅布局
+
+```
+tmux attach -t lobby
+顶部状态栏: [📝白板+任务] [👤我] [🤖小G] [👤老王] ...
+
+窗口 0 (split):  窗口 1:       窗口 2:       窗口 3+:
+┌────────┐       ┌────────┐    ┌────────┐    ┌────────┐
+│📝 白板  │       │        │    │        │    │        │
+│        │       │  我    │    │  小G   │    │  队友  │
+├────────┤       │        │    │        │    │        │
+│📋 任务  │       │        │    │        │    │        │
+└────────┘       └────────┘    └────────┘    └────────┘
+```
+
+- 鼠标点顶栏切窗口 / 滚轮翻页 / Ctrl+B 0-9
+- `member-add.sh` 一键加人
+
+### 完整命令参考
+
+```bash
+# 启动系统
+bash ~/localmodel/lobby-start.sh start    # 启动大厅
+bash ~/localmodel/queue-watch.sh &        # 启动任务队列看守
+
+# 白板
+bash ~/localmodel/whiteboard-post.sh "消息"   # 快速留言
+vim ~/localmodel/whiteboard.md                # 详细编辑
+
+# 任务
+bash ~/localmodel/task-submit.sh "任务描述"    # 派任务
+bash ~/localmodel/task-check.sh <任务ID>       # 查结果
+
+# 团队
+bash ~/localmodel/member-add.sh <名字>         # 加人
+tmux attach -t lobby                           # 进大厅
+```
+
+### 与 brainstorming 联动流程
+
+```
+/brainstorming
+  │
+  └→ docs/specs/2026-06-24-xxx-design.md
+       │
+       ├→ whiteboard-post.sh "📄 新设计: xxx"
+       ├→ task-submit.sh "按 specs/xxx-design.md 实现模块A"
+       ├→ task-submit.sh "按 specs/xxx-design.md 写模块A 测试"
+       └→ 完成后更新白板进度
+```
+
+### 配置文件位置
+
+| 文件 | 归属 | 用途 |
+|------|------|------|
+| `~/claude-workspace/CLAUDE.md` | 我 (Lead) | 指挥手册 |
+| `~/localmodel/CLAUDE.md` | 小G | 身份卡 |
+| `~/localmodel/.claude/settings.local.json` | 小G | 本地 API 配置 |
+| `~/claude-workspace/.claude/settings.json` | 我 | DeepSeek API 配置 |
+
 **一条命令提交，一条命令查结果。中间不需要等。**
