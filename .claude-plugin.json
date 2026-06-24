@@ -1,0 +1,17 @@
+{
+  "name": "localmodel-team",
+  "version": "1.0.0",
+  "description": "本地模型团队协作系统 — tmux 大厅 + 任务队列 + 白板 + /model-local",
+  "author": "Miyuan2018",
+  "license": "MIT",
+  "repository": "https://github.com/Miyuan2018/localmodel",
+  "skills": [
+    "skills/model-local.md"
+  ],
+  "hooks": [],
+  "scripts": {
+    "install": "bash scripts/setup.sh",
+    "start": "bash scripts/lobby-start.sh start",
+    "add-member": "bash scripts/member-add.sh"
+  }
+}
