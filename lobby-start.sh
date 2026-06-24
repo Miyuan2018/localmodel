@@ -28,10 +28,10 @@ case "${1:-start}" in
     tmux send-keys -t "$SESSION:任务" \
       "clear; echo '📋 任务面板'; echo ''; echo '提交: bash task-submit.sh \"任务\"'; echo '查结果: bash task-check.sh'; echo ''; echo '───'; watch -n 5 'echo \"📥 等待:\"; ls outbox/*.waiting 2>/dev/null | sed \"s|.*/||;s/.waiting//\" || echo \"  无\"; echo \"\"; echo \"📤 完成:\"; ls -t outbox/*.md 2>/dev/null | head -5 | sed \"s|.*/||;s/.md//\" || echo \"  无\"'" Enter
 
-    # 窗口 2 = 白板
+    # 窗口 2 = 白板（实时刷新）
     tmux new-window -t "$SESSION" -c "$WORKDIR" -n "白板"
     tmux send-keys -t "$SESSION:白板" \
-      "echo '📝 团队白板 — 自由讨论，小G 也会看'; echo ''; cat whiteboard.md 2>/dev/null; echo ''; echo '─── 编辑: vim whiteboard.md ───'" Enter
+      "watch -n 3 'clear; echo \"📝 团队白板 — 自动刷新 | 编辑: vim whiteboard.md\"; echo \"\"; cat whiteboard.md 2>/dev/null'" Enter
 
     # 窗口 3 = Shell
     tmux new-window -t "$SESSION" -c "$HOME" -n "Shell"
