@@ -134,12 +134,9 @@ if [ -n "${1:-}" ] && is_known_model "$1"; then
 
     # 弹窗（gnome-terminal --wait，PID 可追踪）
     if [ -n "${DISPLAY:-}" ]; then
-      local pidfile="$WORKDIR/.xiaog-terminal.pid"
+      pidfile="$WORKDIR/.xiaog-terminal.pid"
       # 杀上次窗口
-      if [ -f "$pidfile" ]; then
-        kill $(cat "$pidfile") 2>/dev/null || true
-        rm -f "$pidfile"
-      fi
+      [ -f "$pidfile" ] && kill $(cat "$pidfile") 2>/dev/null && rm -f "$pidfile"
       gnome-terminal --wait -- bash -c "tmux attach -t $SESSION; exit" 2>/dev/null &
       echo $! > "$pidfile"
     else
@@ -173,11 +170,8 @@ case "${1:-status}" in
       echo "当前模型: $MODEL"
       # 弹窗（gnome-terminal --wait，PID 可追踪）
       if [ -n "${DISPLAY:-}" ]; then
-        local pidfile="$WORKDIR/.xiaog-terminal.pid"
-        if [ -f "$pidfile" ]; then
-          kill $(cat "$pidfile") 2>/dev/null || true
-          rm -f "$pidfile"
-        fi
+        pidfile="$WORKDIR/.xiaog-terminal.pid"
+        [ -f "$pidfile" ] && kill $(cat "$pidfile") 2>/dev/null && rm -f "$pidfile"
         gnome-terminal --wait -- bash -c "tmux attach -t $SESSION; exit" 2>/dev/null &
         echo $! > "$pidfile"
       else

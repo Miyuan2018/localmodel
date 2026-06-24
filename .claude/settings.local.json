@@ -2,9 +2,9 @@
   "env": {
     "ANTHROPIC_BASE_URL": "http://localhost:8082",
     "ANTHROPIC_AUTH_TOKEN": "local",
-    "ANTHROPIC_MODEL": "qwable-9b",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "qwable-9b",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "qwable-9b",
+    "ANTHROPIC_MODEL": "gemma-4-12b-it",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "gemma-4-12b-it",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "gemma-4-12b-it",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "llama.app",
     "CLAUDE_CODE_SUBAGENT_MODEL": "llama.app"
   }
