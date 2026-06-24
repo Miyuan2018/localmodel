@@ -42,7 +42,7 @@ case "${1:-start}" in
     # 弹窗
     if [ -n "${DISPLAY:-}" ]; then
         [ -f "$DIR/.lobby-terminal.pid" ] && kill $(cat "$DIR/.lobby-terminal.pid") 2>/dev/null && rm -f "$DIR/.lobby-terminal.pid"
-        xterm -title "🏛️ 团队大厅" -fa 'Monospace' -fs 14 -bg black -fg white -e "tmux attach -t $SESSION" 2>/dev/null &
+        gnome-terminal --wait -- bash -c "tmux attach -t $SESSION; exit" 2>/dev/null &
         echo $! > "$DIR/.lobby-terminal.pid"
     fi
 
