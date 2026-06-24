@@ -32,7 +32,9 @@ with open(task_file) as f:
 
 payload = {
     'model': model,
-    'max_tokens': 500,
+    'max_tokens': 1024,
+    'temperature': 0.7,
+    'thinking': {'type': 'disabled'},
     'messages': [{'role': 'user', 'content': content}]
 }
 
@@ -42,15 +44,24 @@ try:
          '-d', json.dumps(payload)],
          capture_output=True, text=True, timeout=120)
     d = json.loads(r.stdout)
+    text_parts = []
     if 'content' in d and isinstance(d['content'], list):
         for block in d['content']:
             if block.get('type') == 'text':
-                print(block['text'])
-                sys.exit(0)
+                text_parts.append(block['text'])
+            elif block.get('type') == 'thinking' and block.get('thinking'):
+                # 如果只有 thinking 没有 text，把 thinking 摘要当回复
+                t = block['thinking']
+                if len(t) > 200:
+                    t = t[:200] + '...'
+                text_parts.append(f'[思考] {t}')
+    if text_parts:
+        print('\n'.join(text_parts))
+        sys.exit(0)
     if 'error' in d:
-        print(f"(API Error: {json.dumps(d['error'], ensure_ascii=False)})")
+        print(f"(API Error) {json.dumps(d['error'], ensure_ascii=False)[:200]}")
     else:
-        print(r.stdout[:500])
+        print(f"(API 返回异常) {r.stdout[:300]}")
 except Exception as e:
     print(f"(API 调用失败: {e})")
 PYEOF
