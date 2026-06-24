@@ -121,6 +121,11 @@ if [ -n "${1:-}" ] && is_known_model "$1"; then
     ALIAS=$(get_model_alias "$new_model")
     cd "$WORKDIR" || exit 1
     update_project_settings "$new_model" "$ALIAS"
+    # 重启 llama-server 加载新模型
+    pkill llama-server 2>/dev/null || true
+    sleep 0.5
+    bash "$WORKDIR/start-server.sh" &>/tmp/llama-server.log &
+    sleep 2
     tmux new-session -d -s "$SESSION" -c "$WORKDIR" -n "xiaog"
     tmux setenv -t "$SESSION" ANTHROPIC_BASE_URL "http://localhost:8082"
     tmux setenv -t "$SESSION" ANTHROPIC_AUTH_TOKEN "local"
