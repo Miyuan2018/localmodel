@@ -3,8 +3,8 @@
 # 用法: task-submit.sh "任务描述"
 # 返回任务 ID，结果出现在 ~/localmodel/outbox/<id>.md
 
-# 默认发到大厅的小G 窗口
-TARGET="lobby:小G"
+# 默认发到小G 的 xiaog session（用户 /xiaog 弹出的窗口）
+TARGET="xiaog"
 OUTBOX="$HOME/localmodel/outbox"
 
 # 如果第一个参数是 session:window 格式，用它的
