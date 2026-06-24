@@ -132,11 +132,18 @@ if [ -n "${1:-}" ] && is_known_model "$1"; then
     tmux send-keys -t "$SESSION" "$(claude_cmd)" Enter
     echo "小G 已重启，模型: $new_model"
 
-    # 弹窗（xterm 命令结束自动关闭，不残留）
+    # 弹窗（gnome-terminal --wait，PID 可追踪）
     if [ -n "${DISPLAY:-}" ]; then
-        xterm -title "小G ($new_model)" -e "tmux attach -t $SESSION" 2>/dev/null &
+      local pidfile="$WORKDIR/.xiaog-terminal.pid"
+      # 杀上次窗口
+      if [ -f "$pidfile" ]; then
+        kill $(cat "$pidfile") 2>/dev/null || true
+        rm -f "$pidfile"
+      fi
+      gnome-terminal --wait -- bash -c "tmux attach -t $SESSION; exit" 2>/dev/null &
+      echo $! > "$pidfile"
     else
-        echo "终端 attach: tmux attach -t $SESSION"
+      echo "终端 attach: tmux attach -t $SESSION"
     fi
     exit 0
 fi
@@ -164,12 +171,19 @@ case "${1:-status}" in
       tmux send-keys -t "$SESSION" "$(claude_cmd)" Enter
       echo "小G 已启动，工作目录: $WORKDIR"
       echo "当前模型: $MODEL"
-      # 弹窗（xterm 命令结束自动关闭，不残留）
+      # 弹窗（gnome-terminal --wait，PID 可追踪）
       if [ -n "${DISPLAY:-}" ]; then
-        xterm -title "小G ($MODEL)" -e "tmux attach -t $SESSION" 2>/dev/null &
+        local pidfile="$WORKDIR/.xiaog-terminal.pid"
+        if [ -f "$pidfile" ]; then
+          kill $(cat "$pidfile") 2>/dev/null || true
+          rm -f "$pidfile"
+        fi
+        gnome-terminal --wait -- bash -c "tmux attach -t $SESSION; exit" 2>/dev/null &
+        echo $! > "$pidfile"
       else
         echo "终端 attach: tmux attach -t $SESSION"
       fi
+    fi
     ;;
 
   restart)
