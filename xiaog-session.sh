@@ -104,6 +104,13 @@ get_model_alias() {
 
 # ── commands ─────────────────────────────────────────
 
+# lobby: 启动团队大厅
+if [ "${1:-}" = "lobby" ]; then
+    bash "$HOME/localmodel/lobby-start.sh" start
+    echo "加入: tmux attach -t lobby"
+    exit 0
+fi
+
 # 自动识别: 如果第一个参数是已知模型名 → 切换并重启
 if [ -n "${1:-}" ] && is_known_model "$1"; then
     new_model="$1"

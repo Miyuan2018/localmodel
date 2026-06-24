@@ -19,8 +19,11 @@ tmux attach -t lobby
 | 命令 | 说明 |
 |------|------|
 | `/model-local` | 启动/进入小G tmux 会话 |
+| `/model-local lobby` | 启动团队大厅 (白板+任务+我+小G) |
 | `/model-local gemma` | 切换到 Gemma 4 12B |
 | `/model-local qwable` | 切换到 Qwable 9B (Fable 5 distill) |
+| `/model-local restart` | 重启小G |
+| `/model-local close` | 关闭小G |
 
 ## 大厅 (tmux attach -t lobby)
 
