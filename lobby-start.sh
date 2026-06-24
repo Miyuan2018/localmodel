@@ -41,14 +41,14 @@ case "${1:-start}" in
     tmux new-session -d -s "$SESSION" -c "$DIR" -n "大厅"
 
     # Pane 0 = 左栏（后续拆成白板+任务）
-    # Pane 1 = 右栏（小G）
-    tmux split-window -h -t "$SESSION:大厅.0" -c "$DIR"
-    tmux send-keys -t "$SESSION:大厅.1" "echo '👤 小G'; echo ''; cd $DIR && claude" Enter
+    # Pane 1 = 右栏第一列（我，主 session）
+    tmux split-window -h -t "$SESSION:大厅.0" -c "$HOME"
+    tmux send-keys -t "$SESSION:大厅.1" "echo '👤 我'; echo ''; cd $HOME && claude" Enter
 
     # ── Step 2: 左栏纵向拆成 白板(上) + 任务(下) ──
     tmux select-pane -t "$SESSION:大厅.0"
     tmux split-window -v -t "$SESSION:大厅.0" -c "$DIR"
-    # 现在: 0=白板(左上), 2=任务(左下), 1=小G(右)
+    # 现在: 0=白板(左上), 2=任务(左下), 1=我(右)
     tmux send-keys -t "$SESSION:大厅.0" \
       "watch -n 3 'clear; echo \"📝 团队白板  \$(date +%H:%M:%S)\"; echo \"\"; cat $DIR/whiteboard.md 2>/dev/null; echo \"\"; echo \"─── vim whiteboard.md ───\"'" Enter
     tmux send-keys -t "$SESSION:大厅.2" \
@@ -56,6 +56,12 @@ case "${1:-start}" in
 
     # 调整左栏窄一点
     tmux resize-pane -t "$SESSION:大厅.0" -x 35 2>/dev/null || true
+
+    # ── Step 3: 添加小G（跟其他成员一样在右栏）──
+    last=$(tmux list-panes -t "$SESSION:大厅" -F '#{pane_index}' | tail -1)
+    tmux split-window -h -t "$SESSION:大厅.$last" -c "$DIR"
+    new=$(tmux list-panes -t "$SESSION:大厅" -F '#{pane_index}' | tail -1)
+    tmux send-keys -t "$SESSION:大厅.$new" "echo '👤 小G (gemma)'; echo ''; cd $DIR && claude" Enter
 
     # ── 后台通知器 ──
     ps aux | grep "[t]ask-notify.sh" | awk '{print $2}' | xargs -r kill 2>/dev/null || true
@@ -66,11 +72,11 @@ case "${1:-start}" in
     echo "  团队大厅"
     echo "  tmux attach -t $SESSION"
     echo ""
-    echo "  ┌──────┬──────┬──────┬──────┐"
-    echo "  │ 白板 │ 小G  │ Bob  │ ...  │"
-    echo "  ├──────┤      │      │      │"
-    echo "  │ 任务 │      │      │      │"
-    echo "  └──────┴──────┴──────┴──────┘"
+    echo "  ┌──────┬──────┬──────┬──────┬──────┐"
+    echo "  │ 白板 │  我  │ 小G  │ 老王 │ ...  │"
+    echo "  ├──────┤      │      │      │      │"
+    echo "  │ 任务 │      │      │      │      │"
+    echo "  └──────┴──────┴──────┴──────┴──────┘"
     echo ""
     echo "  加人: bash $DIR/member-add.sh <名字>"
     echo "══════════════════════════════════════════"
