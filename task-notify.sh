@@ -45,6 +45,11 @@ while true; do
             if [ -s "$result" ]; then
                 rm -f "$pending"
                 echo "[$(date '+%H:%M:%S')] ✅ $tid → outbox/"
+
+                # 同步贴到白板
+                WB="$HOME/localmodel/whiteboard.md"
+                brief=$(head -3 "$result" | tail -1)
+                sed -i "/^## 小G 最新回复/i\\\n✅ **$tid** ($(date '+%H:%M:%S'))\n\n详见: outbox/$tid.md\n" "$WB" 2>/dev/null || true
             fi
         fi
     fi
