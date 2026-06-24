@@ -13,11 +13,11 @@ if ! tmux has-session -t "$SESSION" 2>/dev/null; then
     exit 1
 fi
 
-# 找到最右边的 pane
-last=$(tmux list-panes -t "$SESSION:大厅" -F '#{pane_index}' | tail -1)
+# 找到最右边的 pane（x 坐标最大的那个）
+rightmost=$(tmux list-panes -t "$SESSION:大厅" -F '#{pane_index} #{pane_left}' | sort -k2 -n | tail -1 | awk '{print $1}')
 
-# 在右边 split 新栏
-tmux split-window -h -t "$SESSION:大厅.$last" -c "$DIR"
+# 在它右边 split 新栏
+tmux split-window -h -t "$SESSION:大厅.$rightmost" -c "$DIR"
 new=$(tmux list-panes -t "$SESSION:大厅" -F '#{pane_index}' | tail -1)
 
 # 可选模型参数

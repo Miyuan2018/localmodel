@@ -37,25 +37,25 @@ case "${1:-start}" in
 
     cd "$DIR" || exit 1
 
-    # ── 创建基础 session ──
+    # ── Step 1: 先左右分栏（左=白板+任务, 右=小G）──
     tmux new-session -d -s "$SESSION" -c "$DIR" -n "大厅"
 
-    # ── 左栏上: 白板 ──
-    tmux send-keys -t "$SESSION:大厅" \
-      "watch -n 3 'clear; echo \"📝 团队白板  \$(date +%H:%M:%S)\"; echo \"\"; cat $DIR/whiteboard.md 2>/dev/null; echo \"\"; echo \"─── vim whiteboard.md ───\"'" Enter
+    # Pane 0 = 左栏（后续拆成白板+任务）
+    # Pane 1 = 右栏（小G）
+    tmux split-window -h -t "$SESSION:大厅.0" -c "$DIR"
+    tmux send-keys -t "$SESSION:大厅.1" "echo '👤 小G'; echo ''; cd $DIR && claude" Enter
 
-    # ── 左栏下: 任务面板 ──
+    # ── Step 2: 左栏纵向拆成 白板(上) + 任务(下) ──
+    tmux select-pane -t "$SESSION:大厅.0"
     tmux split-window -v -t "$SESSION:大厅.0" -c "$DIR"
-    tmux send-keys -t "$SESSION:大厅.1" \
+    # 现在: 0=白板(左上), 2=任务(左下), 1=小G(右)
+    tmux send-keys -t "$SESSION:大厅.0" \
+      "watch -n 3 'clear; echo \"📝 团队白板  \$(date +%H:%M:%S)\"; echo \"\"; cat $DIR/whiteboard.md 2>/dev/null; echo \"\"; echo \"─── vim whiteboard.md ───\"'" Enter
+    tmux send-keys -t "$SESSION:大厅.2" \
       "watch -n 5 'clear; echo \"📋 任务面板  \$(date +%H:%M:%S)\"; echo \"\"; echo \"📥 等待:\"; ls $DIR/outbox/*.waiting 2>/dev/null | sed \"s|.*/||;s/.waiting//\" || echo \"  无\"; echo \"\"; echo \"📤 完成:\"; ls -t $DIR/outbox/*.md 2>/dev/null | head -5 | sed \"s|.*/||;s/.md//\" || echo \"  无\"'" Enter
 
-    # 调整左栏宽度（占总宽 30%）
-    tmux resize-pane -t "$SESSION:大厅.0" -x 40 2>/dev/null || true
-
-    # ── 右栏: 小G ──
-    tmux select-pane -t "$SESSION:大厅.0"
-    tmux split-window -h -t "$SESSION:大厅.0" -c "$DIR"
-    tmux send-keys -t "$SESSION:大厅.2" "echo '👤 小G (gemma)'; echo ''; cd $DIR && claude" Enter
+    # 调整左栏窄一点
+    tmux resize-pane -t "$SESSION:大厅.0" -x 35 2>/dev/null || true
 
     # ── 后台通知器 ──
     ps aux | grep "[t]ask-notify.sh" | awk '{print $2}' | xargs -r kill 2>/dev/null || true
