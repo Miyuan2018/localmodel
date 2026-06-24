@@ -1,0 +1,13 @@
+[Unit]
+Description=小G coclaude 团队协作服务
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /home/nvidia/localmodel/coclaude-service.sh
+ExecStop=/usr/bin/tmux kill-session -t coclaude-team
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target
