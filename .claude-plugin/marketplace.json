@@ -1,0 +1,20 @@
+{
+  "name": "localmodel",
+  "id": "localmodel",
+  "owner": { "name": "Miyuan2018" },
+  "metadata": {
+    "description": "本地模型团队协作工具包",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "localmodel-team",
+      "source": "./",
+      "description": "tmux 大厅 + 任务队列 + 白板 + Agent Teams 联动 + /model-local 模型切换",
+      "version": "1.0.0",
+      "author": { "name": "Miyuan2018" },
+      "keywords": ["team", "local-model", "collaboration", "tmux"],
+      "category": "workflow"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "localmodel-team",
+  "description": "本地模型团队协作系统 — tmux 大厅 + 任务队列 + 白板 + /model-local 命令",
+  "version": "1.0.0",
+  "author": { "name": "Miyuan2018" },
+  "license": "MIT",
+  "keywords": ["team", "local-model", "collaboration", "tmux", "task-queue"],
+  "skills": ["./skills/localmodel-team"]
+}
