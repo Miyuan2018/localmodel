@@ -14,3 +14,4 @@ modelscope/
 
 # 临时文件
 *.log
+.xiaog-terminal.pid
