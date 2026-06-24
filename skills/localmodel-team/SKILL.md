@@ -26,6 +26,8 @@ tmux attach -t lobby
 | `/team start` | 启动团队空间 |
 | `/team stop` | 停止团队空间 |
 | `/team status` | 查看状态 |
+| `/team task <描述>` | 派任务给小G |
+| `/team board <消息>` | 白板留言 |
 
 ## 大厅 (tmux attach -t lobby)
 
