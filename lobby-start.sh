@@ -39,11 +39,16 @@ case "${1:-start}" in
     nohup bash "$DIR/task-notify.sh" &>/dev/null &
     sleep 1
 
+    # 弹窗
+    if [ -n "${DISPLAY:-}" ]; then
+        [ -f "$DIR/.lobby-terminal.pid" ] && kill $(cat "$DIR/.lobby-terminal.pid") 2>/dev/null && rm -f "$DIR/.lobby-terminal.pid"
+        xterm -title "🏛️ 团队大厅" -fa 'Monospace' -fs 14 -bg black -fg white -e "tmux attach -t $SESSION" 2>/dev/null &
+        echo $! > "$DIR/.lobby-terminal.pid"
+    fi
+
     echo "══════════════════════════════════════════"
     echo "  团队大厅  tmux attach -t lobby"
     echo "  切换:     Ctrl+B 0=白板 1=我 2=小G ..."
-    echo "  状态栏:   顶部显示所有窗口"
-    echo "  加人:     bash $DIR/member-add.sh <名字>"
     echo "══════════════════════════════════════════"
     ;;
 

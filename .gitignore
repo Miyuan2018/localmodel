@@ -17,3 +17,4 @@ modelscope/
 .xiaog-terminal.pid
 .queue-status
 .lobby-state
+.lobby-terminal.pid
